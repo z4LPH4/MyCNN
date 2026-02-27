@@ -2,12 +2,12 @@ import pickle
 import dense as d
 import MNIST_dataloader as mnist
 import numpy as np
-import cv2
+#import cv2
 
 z = 3
 
-loader = mnist.MnistDataloader('CNN\\mnist\\train_images.idx3-ubyte', 'CNN\\mnist\\train_labels.idx1-ubyte',
-                                'CNN\\mnist\\test_images.idx3-ubyte', 'CNN\\mnist\\test_labels.idx1-ubyte')
+loader = mnist.MnistDataloader('mnist\\train_images.idx3-ubyte', 'mnist\\train_labels.idx1-ubyte',
+                                'mnist\\test_images.idx3-ubyte', 'mnist\\test_labels.idx1-ubyte')
 
 (x_train, y_train), (x_test, y_test) = loader.load_data()
 (x_train, y_train), (x_test, y_test) = (np.array(x_train), np.array(y_train)), (np.array(x_test), np.array(y_test))
@@ -20,7 +20,7 @@ y_test = np.reshape(y_test, (-1, 1))
 
 del x_train, y_train
 
-with open("model_mkIII.pickle", "rb") as handle:
+with open("models\\model.pickle", "rb") as handle:
     model = pickle.load(handle)
 
 x = np.reshape(x_test, (-1, 28*28))

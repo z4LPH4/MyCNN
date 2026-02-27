@@ -16,25 +16,31 @@ class Dense:
     def forward(self, x): # x = input/immagine, y = output
         self.x = x # salvo in memoria l'input (per backward)
         # generazione dell'output usando la funzione y = b + W*x
-        self.y = self.bias + x @ self.weights # varianza He per ReLU
+        y = self.bias + x @ self.weights # varianza He per ReLU
         # funzione di attivazione per dare non linearità
         # più avanti si può mettere un if con tutte le funzioni di attivazione
         if self.activation_fn == 'relu':
-            y = np.maximum(self.y, 0)
+            self.y = np.maximum(y, 0)
         elif self.activation_fn == 'softmax':
-            y = np.exp(self.y) / np.sum(np.exp(self.y), axis=1, keepdims=True)
+            exps = np.exp(y - np.max(y, axis=1, keepdims=True)) # evito la cancellazione numerica sottraendo
+            self.y = exps / np.sum(exps, axis=1, keepdims=True) # il valore massimo
         elif self.activation_fn == None:
             pass
         else:
             raise ValueError('Activation function passata non valida')
         
-        return y
+        return self.y
     
     def backward(self, d_y): # derivata rispetto all'output (si usa chain rule)
         if self.activation_fn == 'relu':
-            d_y = d_y / (np.heaviside(self.y) + 10**(-8))
-        elif self.activation_fn == 'softmax':
-            pass
+            d_y = d_y * (self.y > 0) # dy/dx=1 se y>0, dW/dx=dW/dy*dy/dx
+        elif self.activation_fn == 'softmax': # per la softmax c'è da calcolare la jacobiana
+            batch_size = d_y.shape[0] # visto che la derivata non è semplicemente y/x
+                                      # bisogna calcolarla per ogni immagine della batch
+            for i in range(batch_size):
+                prob = self.y[i].reshape(-1, 1) # tolgo una dimensione superflua
+                d_softmax = np.diagflat(prob) - np.dot(prob, prob.T) # jacobiana della softmax
+                d_y[i] = d_y[i] @ d_softmax
         elif self.activation_fn == None:
             pass
         else:
@@ -71,7 +77,7 @@ class SimpleMLP:
 
         self.layers = np.array(self.layers)
         # learning rate
-        self.lr = 0.001 # per una rete piccola 10^3 va bene, ma può essere meno
+        self.lr = 0.001 # per una rete piccola 10^-3 va bene, ma può essere meno
     
     def forward(self, x):
         for l in self.layers:

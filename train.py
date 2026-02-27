@@ -10,8 +10,8 @@ from sklearn.utils import shuffle
 
 mlp = d.SimpleMLP()
 
-loader = mnist.MnistDataloader('CNN\\mnist\\train_images.idx3-ubyte', 'CNN\\mnist\\train_labels.idx1-ubyte',
-                                'CNN\\mnist\\test_images.idx3-ubyte', 'CNN\\mnist\\test_labels.idx1-ubyte')
+loader = mnist.MnistDataloader('mnist\\train_images.idx3-ubyte', 'mnist\\train_labels.idx1-ubyte',
+                                'mnist\\test_images.idx3-ubyte', 'mnist\\test_labels.idx1-ubyte')
 
 (x_train, y_train), (x_test, y_test) = loader.load_data()
 (x_train, y_train), (x_test, y_test) = (np.array(x_train), np.array(y_train)), (np.array(x_test), np.array(y_test))
@@ -45,7 +45,7 @@ for epoch in tqdm(range(total_epochs), desc='Training process'):
     remaining_time = (total_epochs - (epoch + 1)) * (elapsed_time/(epoch + 1))
     tqdm.write(f'Epoch {epoch + 1}/{total_epochs} completed, loss: {loss}, ETA: {remaining_time:.2f} s')
 
-with open('model_mkIV.pickle', 'wb') as handle:
+with open('models\\model.pickle', 'wb') as handle:
     pickle.dump(mlp, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 '''
