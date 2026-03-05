@@ -21,11 +21,12 @@ class Dense:
         # più avanti si può mettere un if con tutte le funzioni di attivazione
         if self.activation_fn == 'relu':
             self.y = np.maximum(y, 0)
-        elif self.activation_fn == 'softmax':
-            exps = np.exp(y - np.max(y, axis=1, keepdims=True)) # evito la cancellazione numerica sottraendo
+        elif self.activation_fn == 'softmax' or self.activation_fn == 'softmax-crossentropy':
+            z = y - np.max(y, axis=1, keepdims=True) # evito la cancellazione numerica sottraendo max
+            exps = np.exp(z)
             self.y = exps / np.sum(exps, axis=1, keepdims=True) # il valore massimo
         elif self.activation_fn == None:
-            pass
+            self.y = y
         else:
             raise ValueError('Activation function passata non valida')
         
@@ -41,7 +42,7 @@ class Dense:
                 prob = self.y[i].reshape(-1, 1) # tolgo una dimensione superflua
                 d_softmax = np.diagflat(prob) - np.dot(prob, prob.T) # jacobiana della softmax
                 d_y[i] = d_y[i] @ d_softmax
-        elif self.activation_fn == None:
+        elif self.activation_fn == None or self.activation_fn == 'softmax-crossentropy':
             pass
         else:
             raise ValueError('Activation function passata non valida')
@@ -63,6 +64,12 @@ def MSE(y, y_target):
     d_y = 2*(y - y_target)/y.shape[1] # derivata rispetto a x (MSE=1/n*sum(x^2))
     return loss, d_y
 
+def cross_entropy(y, y_target):
+    y = np.clip(y, 1e-15, 1 - 1e-15)
+    loss = -np.mean(y_target*np.log(y))
+    loss_v = -y_target*np.log(y)/y.shape[0]
+    return loss, loss_v
+
 def SGD(d, param, lr):
     # il gradiente da sempre la massima pendenza
     return (param - lr * d) # convergenza a valori ideali mediante loss
@@ -73,7 +80,7 @@ class SimpleMLP:
 
         self.layers.append(Dense(28*28, 128, activation_fn='relu'))
         self.layers.append(Dense(128, 64, activation_fn='relu'))
-        self.layers.append(Dense(64, 10, activation_fn='softmax'))
+        self.layers.append(Dense(64, 10, activation_fn='softmax-crossentropy'))
 
         self.layers = np.array(self.layers)
         # learning rate

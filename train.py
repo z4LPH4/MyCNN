@@ -31,15 +31,27 @@ for epoch in tqdm(range(total_epochs), desc='Training process'):
 
     x_train, y_train = shuffle(x_train, y_train)
 
-    for batch, label in zip(x_train, y_train):
+    for i in range(x_train.shape[0]):
+        batch = x_train[i]
+        label = y_train[i]
+
         x = np.reshape(batch, (32, -1))
         pred = mlp.forward(x)
         y_target = np.zeros((32, 10))
-        for i in range(label.size):
-            y_target[i][label[i]] = 1
-        loss, d_y = d.MSE(pred, y_target)
-        grad = mlp.backward(d_y)
-        mlp.update(grad)
+        for j in range(label.size):
+            y_target[j][label[j]] = 1
+        #loss, d_y = d.MSE(pred, y_target)
+        loss, d_y = d.cross_entropy(pred, y_target)
+        d_y = (pred - y_target) / x.shape[0]
+
+        if i % 5 == 0:
+            #grad = mlp.backward(d_y)
+            grad = mlp.backward(d_y)
+            if i != 0:
+                mlp.update(grad)
+        else:
+            #grad += mlp.backward(d_y)
+            grad = mlp.backward(d_y)
 
     elapsed_time = time.time() - start_time
     remaining_time = (total_epochs - (epoch + 1)) * (elapsed_time/(epoch + 1))

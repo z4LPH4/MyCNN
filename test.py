@@ -45,5 +45,6 @@ del d_y
 print(loss)
 
 #for i in range(10):
+#    print(y[z])
 #    cv2.imshow('img', x_test[z][i])
 #    cv2.waitKey(0)
