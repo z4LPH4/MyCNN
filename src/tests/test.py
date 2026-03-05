@@ -1,6 +1,6 @@
 import pickle
-import dense as d
-import MNIST_dataloader as mnist
+import src.layers.dense as d
+import utils.MNIST_dataloader as mnist
 import numpy as np
 #import cv2
 

@@ -1,14 +1,15 @@
 import pickle
-import dense as d
+import src.layers.dense as d
+from src.layers.SimpleMLP import SimpleMLP
 import time
 from tqdm import tqdm
-import MNIST_dataloader as mnist
+import utils.MNIST_dataloader as mnist
 import numpy as np
 from sklearn.utils import shuffle
 #import torch
 #import torch.nn as nn
 
-mlp = d.SimpleMLP()
+mlp = SimpleMLP()
 
 loader = mnist.MnistDataloader('mnist\\train_images.idx3-ubyte', 'mnist\\train_labels.idx1-ubyte',
                                 'mnist\\test_images.idx3-ubyte', 'mnist\\test_labels.idx1-ubyte')

@@ -2,7 +2,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
-import MNIST_dataloader as mnist
+import utils.MNIST_dataloader as mnist
 
 class SimpleNN(nn.Module):
     def __init__(self):

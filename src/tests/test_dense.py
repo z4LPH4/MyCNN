@@ -1,4 +1,4 @@
-import dense as d
+import src.layers.dense as d
 import numpy as np
 
 layer = d.Dense(3*3, 4*4, activation_fn="softmax")
